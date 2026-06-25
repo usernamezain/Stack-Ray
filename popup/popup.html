@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StackRay</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 12l7.4 6.7a10 10 0 1 1 0-13.4Zm6 0h.01M22 12h.01"/>
+          </svg>
+        </div>
+        <div>
+          <div class="title">StackRay</div>
+          <div id="url" class="subtitle">Loading...</div>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span id="env-badge" class="env-badge hidden"></span>
+        <span id="host-badge" class="host-badge hidden"></span>
+        <div class="credit-btn" id="credit-trigger" title="StackRay Credits & Links">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div class="credit-tooltip" id="credit-panel">
+            <div class="credit-title">Created by Zain Ali Mughal</div>
+            <a href="https://github.com/usernamezain" target="_blank" class="credit-link github">
+              <span>GitHub</span>
+              <span>@usernamezain</span>
+            </a>
+            <a href="https://www.linkedin.com/in/zainali-mughal/" target="_blank" class="credit-link linkedin">
+              <span>LinkedIn</span>
+              <span>zainali-mughal</span>
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbBUVv35fM5eAnXw3w2D" target="_blank" class="credit-link whatsapp">
+              <span>WhatsApp Channel</span>
+              <span>Join Channel</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segmented Control Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-btn active" data-target="tab-tech">Tech</button>
+      <button class="nav-btn" data-target="tab-design">Design</button>
+      <button class="nav-btn" data-target="tab-seo">SEO</button>
+      <button class="nav-btn" data-target="tab-keywords">Keywords</button>
+      <button class="nav-btn" data-target="tab-perf">Perf</button>
+      <button class="nav-btn" data-target="tab-a11y">A11y</button>
+      <button class="nav-btn" data-target="tab-net">Net</button>
+      <button class="nav-btn" data-target="tab-leads">Leads</button>
+      <button class="nav-btn" data-target="tab-ai">AI Summary</button>
+      <button class="nav-btn" data-target="tab-report">Report</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="tab-tech" class="tab-content active">
+      <div id="tech-summary" class="summary-card"></div>
+      <div id="tech-results" class="results-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          Scanning Stack...
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN TAB -->
+    <div id="tab-design" class="tab-content">
+      <!-- Inspector Toggle Row -->
+      <button id="btn-inspect-design" class="action-btn secondary" style="width:100%; margin-bottom:14px; height:36px; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-1px;"><circle cx="12" cy="12" r="10"/><path d="m12 8l-4 4l4 4l4-4z"/></svg>
+        <span>Inspect Page Elements</span>
+      </button>
+
+      <!-- Color Palette -->
+      <div class="section-header-row">
+        <div class="category-header" style="margin:0; border:none; padding:0;">Color Palette</div>
+        <button id="btn-copy-colors" class="mini-btn">Copy HEX</button>
+      </div>
+      <div id="design-colors" class="color-grid"></div>
+
+      <!-- Typography -->
+      <div class="section-header-row">
+        <div class="category-header" style="margin:0; border:none; padding:0;">Typography</div>
+        <button id="btn-copy-fonts" class="mini-btn">Copy Fonts</button>
+      </div>
+      <div id="design-fonts" class="font-list"></div>
+
+      <!-- Detected Font Sources -->
+      <div class="category-header">Font Sources</div>
+      <div id="design-font-sources" class="results-container"></div>
+
+      <!-- Design System Specs -->
+      <div id="design-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Extracting Design Variables...</div>
+      </div>
+    </div>
+
+    <!-- SEO TAB -->
+    <div id="tab-seo" class="tab-content">
+      <div class="seo-score-container">
+        <div class="seo-score-circle">
+          <span id="seo-score-value">--</span>
+          <svg style="position:absolute;top:0;left:0;width:80px;height:80px;transform:rotate(-90deg);">
+            <!-- Background circle -->
+            <circle cx="40" cy="40" r="36"
+              fill="transparent" stroke="#e5e7eb" stroke-width="4">
+            </circle>
+            <!-- Foreground animated ring -->
+            <circle id="seo-score-ring" cx="40" cy="40" r="36"
+              fill="transparent" stroke="#22c55e" stroke-width="4"
+              stroke-dasharray="226.2" stroke-dashoffset="226.2"
+              style="transition: stroke-dashoffset 0.5s ease">
+            </circle>
+          </svg>
+        </div>
+        <div id="seo-score-label" style="font-size:13px;font-weight:600;color:#525252;">SEO Health Score</div>
+      </div>
+      <div id="seo-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Auditing SEO...</div>
+      </div>
+
+      <!-- Social Preview Simulator Section -->
+      <div class="category-header" style="margin-top:16px;">Social Media Previews</div>
+      <div class="social-previews-container">
+        <!-- Google Search Preview -->
+        <div class="social-preview-card google">
+          <div class="social-preview-header">Google Search</div>
+          <div class="google-path" id="google-path">https://example.com</div>
+          <div class="google-title" id="google-title">Page Title</div>
+          <div class="google-desc" id="google-desc">Meta Description snippet text...</div>
+        </div>
+        
+        <!-- LinkedIn Shared Post -->
+        <div class="social-preview-card linkedin">
+          <div class="social-preview-header">LinkedIn Shared Post</div>
+          <div class="linkedin-image-wrap">
+            <img id="linkedin-img" src="" class="hidden" />
+            <div id="linkedin-img-placeholder" class="image-placeholder">No Image Available</div>
+          </div>
+          <div class="linkedin-text-wrap">
+            <div class="linkedin-domain" id="linkedin-domain">example.com</div>
+            <div class="linkedin-title" id="linkedin-title">Post Title goes here</div>
+          </div>
+        </div>
+
+        <!-- X / Twitter Card -->
+        <div class="social-preview-card twitter">
+          <div class="social-preview-header">X / Twitter Card</div>
+          <div class="twitter-image-wrap">
+            <img id="twitter-img" src="" class="hidden" />
+            <div id="twitter-img-placeholder" class="image-placeholder">No Image Available</div>
+          </div>
+          <div class="twitter-text-wrap">
+            <div class="twitter-title" id="twitter-title">Card Title</div>
+            <div class="twitter-desc" id="twitter-desc">Card description goes here...</div>
+            <div class="twitter-domain" id="twitter-domain">example.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYWORDS TAB -->
+    <div id="tab-keywords" class="tab-content">
+      <div class="category-header">Meta Keywords</div>
+      <div id="kw-meta" class="results-container"></div>
+
+      <div class="section-header-row" style="margin-top:12px;">
+        <div class="category-header" style="margin:0;border:none;padding:0;">Top Keywords (Density)</div>
+        <button id="btn-copy-keywords" class="mini-btn">Copy All</button>
+      </div>
+      <div id="kw-density" class="results-container"></div>
+
+      <div class="category-header">Heading Hierarchy</div>
+      <div id="kw-headings" class="results-container"></div>
+
+      <div class="category-header">Robots &amp; Sitemap</div>
+      <div id="kw-robots" class="results-container">
+        <div class="loading"><div class="spinner"></div>Checking...</div>
+      </div>
+    </div>
+
+    <!-- PERF TAB -->
+    <div id="tab-perf" class="tab-content">
+      <div class="perf-metrics-grid">
+        <div class="metric-card" id="metric-fcp">
+          <div class="metric-label">FCP</div>
+          <div class="metric-value">--</div>
+          <div class="metric-bar-bg"><div class="metric-bar"></div></div>
+          <div class="metric-status">--</div>
+        </div>
+        <div class="metric-card" id="metric-lcp">
+          <div class="metric-label">LCP</div>
+          <div class="metric-value">--</div>
+          <div class="metric-bar-bg"><div class="metric-bar"></div></div>
+          <div class="metric-status">--</div>
+        </div>
+        <div class="metric-card" id="metric-cls">
+          <div class="metric-label">CLS</div>
+          <div class="metric-value">--</div>
+          <div class="metric-bar-bg"><div class="metric-bar"></div></div>
+          <div class="metric-status">--</div>
+        </div>
+      </div>
+      <div id="perf-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Measuring Core Web Vitals...</div>
+      </div>
+
+      <!-- Load timing waterfall timeline -->
+      <div class="category-header" style="margin-top:16px;">Navigation Timing Waterfall</div>
+      <div class="waterfall-card">
+        <div id="waterfall-chart" class="waterfall-container">
+          <div class="waterfall-row" id="wf-dns">
+            <div class="wf-label">DNS Lookup</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-good"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+          <div class="waterfall-row" id="wf-tcp">
+            <div class="wf-label">TCP Connect</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-good"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+          <div class="waterfall-row" id="wf-ttfb">
+            <div class="wf-label">TTFB (Server)</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-warn"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+          <div class="waterfall-row" id="wf-download">
+            <div class="wf-label">Download HTML</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-good"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+          <div class="waterfall-row" id="wf-dom">
+            <div class="wf-label">DOM Interactive</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-good"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+          <div class="waterfall-row" id="wf-load">
+            <div class="wf-label">DOMContentLoaded</div>
+            <div class="wf-bar-bg"><div class="wf-bar bar-warn"></div></div>
+            <div class="wf-value">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A11Y TAB -->
+    <div id="tab-a11y" class="tab-content">
+      <div id="a11y-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Auditing Accessibility...</div>
+      </div>
+    </div>
+
+    <!-- NET TAB -->
+    <div id="tab-net" class="tab-content">
+      <div id="net-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Intercepting Network &amp; Console...</div>
+      </div>
+
+      <!-- Live Console terminal -->
+      <div class="terminal-header-row">
+        <div class="category-header" style="margin:0; border:none; padding:0;">Live Console Terminal</div>
+        <div class="terminal-filters">
+          <button class="filter-btn active" data-level="all">All</button>
+          <button class="filter-btn" data-level="log">Info</button>
+          <button class="filter-btn" data-level="warn">Warn</button>
+          <button class="filter-btn" data-level="error">Error</button>
+        </div>
+      </div>
+      <div id="console-terminal" class="terminal-container">
+        <div class="terminal-line system-line">[System] Listening for live page logs...</div>
+      </div>
+    </div>
+
+    <!-- LEADS TAB -->
+    <div id="tab-leads" class="tab-content">
+      <div id="leads-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Hunting for Contacts &amp; Footprints...</div>
+      </div>
+    </div>
+
+    <!-- AI SUMMARY TAB -->
+    <div id="tab-ai" class="tab-content">
+      <div class="ai-config-row">
+        <div class="config-group">
+          <label for="ai-type">Type</label>
+          <select id="ai-type">
+            <option value="key-points" selected>Key Points</option>
+            <option value="tl;dr">TL;DR</option>
+            <option value="teaser">Teaser</option>
+            <option value="headline">Headline</option>
+          </select>
+        </div>
+        <div class="config-group">
+          <label for="ai-length">Length</label>
+          <select id="ai-length">
+            <option value="short">Short</option>
+            <option value="medium" selected>Medium</option>
+            <option value="long">Long</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-generate-ai" class="action-btn" style="width:100%; margin-top:12px; height:38px;">
+        Generate AI Summary
+      </button>
+
+      <div id="ai-warning" class="warning-card hidden" style="margin-top:12px;"></div>
+
+      <div class="category-header" style="margin-top:16px;">Local Summary Output</div>
+      <div id="ai-results" class="results-container ai-output-container">
+        <div class="no-results">Click "Generate AI Summary" to summarize page contents with local Gemini Nano model.</div>
+      </div>
+    </div>
+
+    <!-- REPORT TAB -->
+    <div id="tab-report" class="tab-content">
+      <div class="report-container">
+        <div class="category-header">Export Configuration</div>
+        <div class="export-options">
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="tech" checked />Tech Stack</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="design" checked />Design System</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="seo" checked />SEO Audit</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="keywords" checked />Keywords</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="perf" checked />Performance</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="leads" checked />Lead Data</label>
+          <label class="export-label"><input type="checkbox" class="export-check" data-cat="net" checked />Network/Console</label>
+        </div>
+
+        <div class="category-header">Download Report</div>
+        <p class="report-desc">Download a comprehensive report of the current site analysis.</p>
+        <div class="report-actions">
+          <button id="btn-copy-text" class="action-btn secondary">Copy All Page Text</button>
+          <button id="btn-export-json" class="action-btn">Download JSON</button>
+          <button id="btn-export-csv" class="action-btn">Download CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../categories.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

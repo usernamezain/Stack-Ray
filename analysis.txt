@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Profiler Landscape: Wappalyzer vs BuiltWith</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fafaf9; color: #1c1917; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 60vh; max-height: 500px; }
+        .small-chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 40vh; max-height: 350px; }
+        @media (min-width: 768px) { .chart-container { height: 65vh; } .small-chart-container { height: 45vh; } }
+        .tab-active { border-bottom: 2px solid #0ea5e9; color: #0ea5e9; font-weight: 600; }
+        .hide { display: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid #e5e5e5; }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Chosen Palette: Warm Neutrals with Sky Blue (#0ea5e9) and Emerald (#10b981) Accents -->
+    <!-- Application Structure Plan: The SPA uses a tabbed dashboard structure to break down the user's research request into logical, digestible chunks. 1. Overview (Context), 2. Comparison Sheet (Direct data comparison), 3. Gap Analysis (Identifying weaknesses), 4. Winning Strategy (Actionable roadmap for the new extension). This structure guides the user from understanding the current landscape to formulating a competitive product strategy. -->
+    <!-- Visualization & Content Choices: 1. Radar Chart (Chart.js): Compares Wappalyzer, BuiltWith, and the 'Target Extension' across 5 key dimensions to quickly show market positioning. 2. Interactive Data Table: Replaces a static 'sheet' to allow easy scanning of feature differences. 3. Interactive Cards: Used for Gap Analysis and Strategy to break text into scannable, engaging blocks that reveal more detail on hover/click. NO SVG or Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-stone-800 tracking-tight">&#128269; Profiler<span class="text-sky-500">Intel</span></span>
+                </div>
+                <div class="flex items-center space-x-4 overflow-x-auto" id="nav-tabs">
+                    <button class="tab-btn tab-active px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200" data-target="overview">Overview & Positioning</button>
+                    <button class="tab-btn px-3 py-2 text-sm font-medium text-stone-500 hover:text-stone-800 whitespace-nowrap transition-colors duration-200" data-target="comparison">Comparison Sheet</button>
+                    <button class="tab-btn px-3 py-2 text-sm font-medium text-stone-500 hover:text-stone-800 whitespace-nowrap transition-colors duration-200" data-target="gaps">Gap Analysis</button>
+                    <button class="tab-btn px-3 py-2 text-sm font-medium text-stone-500 hover:text-stone-800 whitespace-nowrap transition-colors duration-200" data-target="strategy">Winning Strategy</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <section id="overview" class="tab-content block">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-stone-900 mb-4">Landscape Analysis: Wappalyzer vs. BuiltWith</h1>
+                <p class="text-lg text-stone-600 max-w-3xl">This section provides a high-level view of the two leading technology profiling tools. Wappalyzer dominates the lightweight, instant-gratification developer tool space, while BuiltWith owns the heavy enterprise data and lead generation market. Understanding their positioning is crucial for building a competitive alternative.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div class="glass-card p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-3 flex items-center text-purple-600">&#128187; Wappalyzer</h2>
+                    <p class="text-stone-600 mb-4">A fast, browser-based extension and API that identifies technologies on websites in real-time. It relies heavily on pattern matching in HTTP headers, HTML, and JavaScript variables.</p>
+                    <ul class="list-disc pl-5 text-sm text-stone-700 space-y-1">
+                        <li><strong>Primary Use Case:</strong> Quick technical reconnaissance by developers and security researchers.</li>
+                        <li><strong>Strengths:</strong> Real-time accuracy, excellent UX/UI in the extension, highly affordable, open-source core.</li>
+                        <li><strong>Weaknesses:</strong> Lacks deep historical data, limited contact/lead generation capabilities.</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-6 rounded-xl shadow-sm">
+                    <h2 class="text-xl font-semibold mb-3 flex items-center text-blue-600">&#128202; BuiltWith</h2>
+                    <p class="text-stone-600 mb-4">A massive historical database of web technologies. It crawls the web continuously, building profiles of what technologies domains use and how they transition over time.</p>
+                    <ul class="list-disc pl-5 text-sm text-stone-700 space-y-1">
+                        <li><strong>Primary Use Case:</strong> Enterprise lead generation, market share analysis, and investment research.</li>
+                        <li><strong>Strengths:</strong> Unmatched historical data, immense coverage, built-in lead generation (finding contacts).</li>
+                        <li><strong>Weaknesses:</strong> Extremely expensive, dated and clunky user interface, extension is slow compared to Wappalyzer.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-xl shadow-sm mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-center">Market Positioning Comparison (Current vs. Target)</h3>
+                <div class="chart-container">
+                    <canvas id="positioningChart"></canvas>
+                </div>
+                <p class="text-sm text-stone-500 text-center mt-4">This radar chart visualizes the strengths of the incumbents and maps the optimal target area for a new, disruptive extension.</p>
+            </div>
+        </section>
+
+        <section id="comparison" class="tab-content hide">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">Direct Feature Comparison</h2>
+                <p class="text-lg text-stone-600 max-w-3xl">This interactive sheet breaks down the granular differences between the two platforms across pricing, data depth, and user experience. Use the toggle to filter by specific comparison categories.</p>
+            </div>
+
+            <div class="mb-4 flex space-x-2">
+                <button class="filter-btn bg-stone-800 text-white px-4 py-1 rounded-full text-sm hover:bg-stone-700 transition" data-filter="all">All Features</button>
+                <button class="filter-btn bg-stone-200 text-stone-800 px-4 py-1 rounded-full text-sm hover:bg-stone-300 transition" data-filter="data">Data & Tracking</button>
+                <button class="filter-btn bg-stone-200 text-stone-800 px-4 py-1 rounded-full text-sm hover:bg-stone-300 transition" data-filter="ux">UX & Platform</button>
+                <button class="filter-btn bg-stone-200 text-stone-800 px-4 py-1 rounded-full text-sm hover:bg-stone-300 transition" data-filter="cost">Pricing & Business</button>
+            </div>
+
+            <div class="overflow-x-auto glass-card rounded-xl shadow-sm">
+                <table class="min-w-full divide-y divide-stone-200">
+                    <thead class="bg-stone-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Feature Category</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider">Wappalyzer</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">BuiltWith</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-stone-200" id="comparison-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="gaps" class="tab-content hide">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">Critical Gap Analysis: What They Lack</h2>
+                <p class="text-lg text-stone-600 max-w-3xl">To beat these extensions, we must exploit their weaknesses. This section details the critical flaws and missing features in both Wappalyzer and BuiltWith, providing a blueprint for our competitive advantage.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="gap-cards-container">
+            </div>
+        </section>
+
+        <section id="strategy" class="tab-content hide">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">The Winning Strategy: Building the Ultimate Extension</h2>
+                <p class="text-lg text-stone-600 max-w-3xl">Based on the research and gap analysis, here is the feature roadmap and strategic positioning required to build an extension that surpasses both Wappalyzer and BuiltWith.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-1/3">
+                    <div class="sticky top-24 space-y-4">
+                        <div class="glass-card p-5 border-l-4 border-emerald-500 cursor-pointer hover:shadow-md transition strat-card" data-strat="context">
+                            <h3 class="font-bold text-lg">&#9881; Contextual Intelligence</h3>
+                            <p class="text-sm text-stone-500 mt-1">Go beyond "They use React."</p>
+                        </div>
+                        <div class="glass-card p-5 border-l-4 border-stone-300 cursor-pointer hover:shadow-md transition strat-card" data-strat="intent">
+                            <h3 class="font-bold text-lg">&#128200; Intent & Performance</h3>
+                            <p class="text-sm text-stone-500 mt-1">Combine tech stack with site health.</p>
+                        </div>
+                        <div class="glass-card p-5 border-l-4 border-stone-300 cursor-pointer hover:shadow-md transition strat-card" data-strat="leads">
+                            <h3 class="font-bold text-lg">&#128101; Micro-Lead Gen</h3>
+                            <p class="text-sm text-stone-500 mt-1">Accessible contacts without Enterprise price.</p>
+                        </div>
+                        <div class="glass-card p-5 border-l-4 border-stone-300 cursor-pointer hover:shadow-md transition strat-card" data-strat="ai">
+                            <h3 class="font-bold text-lg">&#129302; AI Tech Summaries</h3>
+                            <p class="text-sm text-stone-500 mt-1">LLM-powered stack explanations.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:w-2/3">
+                    <div class="glass-card p-8 rounded-xl min-h-[400px]" id="strat-detail-pane">
+                        <h2 class="text-2xl font-bold text-emerald-600 mb-4 flex items-center">&#9881; Contextual Intelligence</h2>
+                        <p class="text-stone-700 text-lg mb-6">Current tools tell you a technology is present, but not how heavily it is relied upon. Our extension must provide context.</p>
+                        <div class="bg-stone-50 p-4 rounded-lg border border-stone-200">
+                            <h4 class="font-bold mb-2 text-stone-800">Implementation Ideas:</h4>
+                            <ul class="list-disc pl-5 space-y-2 text-stone-600">
+                                <li><strong>Sub-domain vs. Main Domain:</strong> Clearly tag if a tech (like Shopify) is on the root domain or just `shop.domain.com`.</li>
+                                <li><strong>Version Confidence:</strong> Instead of just guessing the version, show a confidence score based on the source (headers vs. source code comments).</li>
+                                <li><strong>Tech Categories Weighting:</strong> Indicate the primary CMS/Framework vs. minor plugins based on asset load size.</li>
+                            </ul>
+                        </div>
+                        <div class="mt-8">
+                            <h4 class="font-bold mb-2 text-stone-800">Why this beats the competition:</h4>
+                            <p class="text-stone-600">Wappalyzer treats a tracking pixel with the same visual weight as the core frontend framework. BuiltWith's UI is too dense to parse quickly. Contextual intelligence saves developers and sales reps time by highlighting the *core* stack immediately.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 glass-card p-6 rounded-xl shadow-sm">
+                <h3 class="text-lg font-semibold mb-4 text-center">Feature Priority Matrix for V1</h3>
+                <div class="small-chart-container">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('text-stone-500');
+                    });
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('text-stone-500');
+
+                    contents.forEach(c => c.classList.add('hide'));
+                    document.getElementById(tab.dataset.target).classList.remove('hide');
+                });
+            });
+
+            const comparisonData = [
+                { category: 'data', name: 'Real-time Detection', wapp: 'Excellent (Browser execution)', built: 'Poor (Relies on server crawl)' },
+                { category: 'data', name: 'Historical Data', wapp: 'None / Very Limited', built: 'Industry Leading (Years of data)' },
+                { category: 'data', name: 'Tech Spend Estimates', wapp: 'Not Available', built: 'Available & Comprehensive' },
+                { category: 'ux', name: 'Browser Extension UI', wapp: 'Modern, Fast, Intuitive', built: 'Clunky, Slow, Dated' },
+                { category: 'ux', name: 'API Ease of Use', wapp: 'Simple REST API', built: 'Complex, heavily rate-limited based on tier' },
+                { category: 'cost', name: 'Starting Price (API)', wapp: '~$14/month (Basic)', built: '$295/month (Basic)' },
+                { category: 'cost', name: 'Enterprise Tier', wapp: 'Affordable data sets', built: '$995+/month (Pro/Enterprise)' },
+                { category: 'cost', name: 'Target Audience', wapp: 'Developers, Security, Freelancers', built: 'Enterprise Sales, VCs, Marketing Agencies' }
+            ];
+
+            const tbody = document.getElementById('comparison-table-body');
+            
+            function renderTable(filter) {
+                tbody.innerHTML = '';
+                comparisonData.forEach(row => {
+                    if (filter === 'all' || row.category === filter) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-900">${row.name}</td>
+                            <td class="px-6 py-4 whitespace-normal text-sm text-stone-500">${row.wapp}</td>
+                            <td class="px-6 py-4 whitespace-normal text-sm text-stone-500">${row.built}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+            }
+
+            renderTable('all');
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-stone-800', 'text-white');
+                        b.classList.add('bg-stone-200', 'text-stone-800');
+                    });
+                    e.target.classList.remove('bg-stone-200', 'text-stone-800');
+                    e.target.classList.add('bg-stone-800', 'text-white');
+                    renderTable(e.target.dataset.filter);
+                });
+            });
+
+            const gapData = [
+                { title: 'The "Ghost Tech" Problem', desc: 'Both tools often flag technologies that were uninstalled but left residual code (like dead JavaScript variables). They lack active execution verification.' },
+                { title: 'Lack of Stack Topology', desc: 'They list technologies in a flat list. They do not explain how the tech connects (e.g., "React frontend communicating with a Laravel backend via GraphQL").' },
+                { title: 'Zero Site Health Context', desc: 'Knowing a site uses WordPress is okay. Knowing it uses an outdated, vulnerable version of WordPress while loading 5MB of unoptimized scripts is actionable data they do not provide.' },
+                { title: 'BuiltWith is Unapproachable', desc: 'Its pricing completely alienates small agencies and solo founders. There is a massive gap in the market for a $49/mo lead-gen focused alternative.' },
+                { title: 'Wappalyzer Lacks "Who"', desc: 'Wappalyzer tells you the "What" (the tech) but is terrible at the "Who" (company size, revenue, key employee contacts).' },
+                { title: 'Stagnant Innovation', desc: 'Neither platform leverages modern LLMs to summarize the tech stack into human-readable business intelligence. They just output raw lists.' }
+            ];
+
+            const gapContainer = document.getElementById('gap-cards-container');
+            gapData.forEach((gap, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-6 rounded-xl hover:-translate-y-1 transition transform duration-300 border-t-4 border-red-400';
+                card.innerHTML = `
+                    <div class="text-2xl mb-2 font-bold text-stone-300">0${index + 1}</div>
+                    <h3 class="text-lg font-bold text-stone-800 mb-2">${gap.title}</h3>
+                    <p class="text-sm text-stone-600">${gap.desc}</p>
+                `;
+                gapContainer.appendChild(card);
+            });
+
+            const stratData = {
+                context: {
+                    icon: '&#9881;',
+                    title: 'Contextual Intelligence',
+                    subtitle: 'Current tools tell you a technology is present, but not how heavily it is relied upon. Our extension must provide context.',
+                    impl: ['Sub-domain vs. Main Domain: Clearly tag if a tech is on the root domain or just a sub-folder.', 'Version Confidence: Indicate if a version number is a guess or a certainty.', 'Tech Categories Weighting: Visually separate core infrastructure from minor tracking pixels.'],
+                    why: 'Saves users time by highlighting the core stack immediately, rather than forcing them to parse a flat list of 50 technologies.'
+                },
+                intent: {
+                    icon: '&#128200;',
+                    title: 'Intent & Performance Data',
+                    subtitle: 'Combine technology profiling with immediate performance and SEO metrics to provide actionable sales triggers.',
+                    impl: ['Core Web Vitals Snippet: Show page speed directly in the extension.', 'Security Headers Check: Flag missing basic security headers.', 'Console Errors: Briefly indicate if the site is actively throwing JS errors.'],
+                    why: 'A web agency doesn\'t just want to know a site uses Shopify; they want to know if that Shopify site is slow or broken so they can pitch a fix.'
+                },
+                leads: {
+                    icon: '&#128101;',
+                    title: 'Micro-Lead Generation',
+                    subtitle: 'Bridge the gap between Wappalyzer (no contacts) and BuiltWith ($300/mo minimum) by offering integrated, credits-based contact finding.',
+                    impl: ['LinkedIn Integration: 1-click search for company employees.', 'Generic Email Guesser: Find info@ or support@ immediately.', 'Freemium Export: Allow exporting 10 leads per month for free.'],
+                    why: 'This captures the massive mid-market of freelancers and small agencies who cannot afford BuiltWith but need sales leads.'
+                },
+                ai: {
+                    icon: '&#129302;',
+                    title: 'AI Tech Summaries',
+                    subtitle: 'Leverage cheap LLM APIs to turn raw data into a readable executive summary.',
+                    impl: ['The "Explain it to me" button: Generates a 2-sentence summary of the architecture.', 'Cost Estimator: AI estimates the monthly SaaS spend based on detected tools.', 'Competitor Suggestion: AI suggests alternative tools to what is currently detected.'],
+                    why: 'Moves the tool from a raw data scraper to an intelligent analyst assistant.'
+                }
+            };
+
+            const stratCards = document.querySelectorAll('.strat-card');
+            const stratDetailPane = document.getElementById('strat-detail-pane');
+
+            stratCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    stratCards.forEach(c => {
+                        c.classList.remove('border-emerald-500');
+                        c.classList.add('border-stone-300');
+                    });
+                    card.classList.remove('border-stone-300');
+                    card.classList.add('border-emerald-500');
+
+                    const key = card.dataset.strat;
+                    const data = stratData[key];
+
+                    let implHtml = data.impl.map(i => `<li>${i}</li>`).join('');
+
+                    stratDetailPane.style.opacity = '0';
+                    setTimeout(() => {
+                        stratDetailPane.innerHTML = `
+                            <h2 class="text-2xl font-bold text-emerald-600 mb-4 flex items-center">${data.icon} ${data.title}</h2>
+                            <p class="text-stone-700 text-lg mb-6">${data.subtitle}</p>
+                            <div class="bg-stone-50 p-4 rounded-lg border border-stone-200">
+                                <h4 class="font-bold mb-2 text-stone-800">Implementation Ideas:</h4>
+                                <ul class="list-disc pl-5 space-y-2 text-stone-600">
+                                    ${implHtml}
+                                </ul>
+                            </div>
+                            <div class="mt-8">
+                                <h4 class="font-bold mb-2 text-stone-800">Why this beats the competition:</h4>
+                                <p class="text-stone-600">${data.why}</p>
+                            </div>
+                        `;
+                        stratDetailPane.style.transition = 'opacity 0.3s ease';
+                        stratDetailPane.style.opacity = '1';
+                    }, 150);
+                });
+            });
+
+            const ctxPos = document.getElementById('positioningChart').getContext('2d');
+            new Chart(ctxPos, {
+                type: 'radar',
+                data: {
+                    labels: ['Real-time Speed', 'Data Depth', 'UI/UX Quality', 'Lead Gen Power', 'Affordability'],
+                    datasets: [
+                        {
+                            label: 'Wappalyzer',
+                            data: [9, 3, 8, 2, 9],
+                            backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                            borderColor: 'rgba(147, 51, 234, 1)',
+                            pointBackgroundColor: 'rgba(147, 51, 234, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'BuiltWith',
+                            data: [3, 10, 4, 9, 2],
+                            backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Our Target Extension',
+                            data: [8, 6, 9, 6, 8],
+                            backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 3,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0,0,0,0.1)' },
+                            grid: { color: 'rgba(0,0,0,0.1)' },
+                            pointLabels: { font: { family: 'Inter', size: 12 }, color: '#444' },
+                            ticks: { display: false, min: 0, max: 10 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Inter' } } }
+                    }
+                }
+            });
+
+            const ctxPri = document.getElementById('priorityChart').getContext('2d');
+            new Chart(ctxPri, {
+                type: 'bar',
+                data: {
+                    labels: ['Contextual Intelligence', 'AI Summaries', 'Micro-Lead Gen', 'Performance Intent'],
+                    datasets: [{
+                        label: 'Impact Score (1-10)',
+                        data: [9, 7, 8, 6],
+                        backgroundColor: 'rgba(14, 165, 233, 0.8)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Development Effort (1-10)',
+                        data: [5, 4, 8, 6],
+                        backgroundColor: 'rgba(214, 211, 209, 0.8)',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { beginAtZero: true, max: 10, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        y: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

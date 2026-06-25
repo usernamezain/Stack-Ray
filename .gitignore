@@ -1,0 +1,11 @@
+# Local reference archives
+chrome-extensions-samples-main/
+
+# GSD planning folder
+.planning/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.local
