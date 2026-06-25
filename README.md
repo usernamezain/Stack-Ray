@@ -83,3 +83,5 @@ Designed, built, and optimized by **Zain Ali Mughal**.
 ---
 
 *StackRay is client-side only. Your analyzed content never leaves your browser.*
+
+*Created for devlpers by developer.*
