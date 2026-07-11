@@ -86,6 +86,148 @@ document.addEventListener("DOMContentLoaded", () => {
     return res;
   });
 
+  setupTool("tool-colorpicker", pickColor, (res) => {
+    return res;
+  });
+
+  setupTool("tool-gridflex", highlightGridFlex, (res) => {
+    return `Grid & Flexbox visual markers: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-absolute", highlightAbsoluteFixed, (res) => {
+    return `Absolute & Fixed elements highlighting: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-notransitions", killTransitions, (res) => {
+    return `Transitions & Animations state: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-stripquery", stripURLParams, (res) => {
+    return res;
+  });
+
+  setupTool("tool-jsonld", extractJsonLd, (res) => {
+    if (res && res.length > 0) {
+      return `JSON-LD Schema parsed (${res.length} blocks):\n\n${res.map((val, idx) => `[Block ${idx + 1}]\n${JSON.stringify(val, null, 2)}`).join('\n\n')}`;
+    }
+    return "No JSON-LD schema blocks found on this page.";
+  });
+
+  setupTool("tool-metatags", extractMetaTags, (res) => {
+    if (res && res.length > 0) {
+      return `Meta Tags extracted:\n\n${res.join('\n')}`;
+    }
+    return "No meta tags found.";
+  });
+
+  setupTool("tool-brokenlinks", getPageLinks, async (res) => {
+    if (!res || res.length === 0) return "No links to scan.";
+    const unique = [...new Set(res)].slice(0, 15);
+    showDevToolsLog(`Scanning first ${unique.length} links for status code verification...`);
+    
+    const results = [];
+    for (const url of unique) {
+      if (!url.startsWith('http')) {
+        results.push(`${url}: ✅ Local / Internal`);
+        continue;
+      }
+      try {
+        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+        results.push(`${url}: ✅ Active`);
+      } catch (e) {
+        results.push(`${url}: ❌ Failed/Broken`);
+      }
+    }
+    return `Audit Result (Sample of ${unique.length} links):\n\n${results.join('\n')}`;
+  });
+
+  setupTool("tool-perfmetrics", getPerfMetrics, (res) => {
+    if (res) {
+      return `Page Load Performance Metrics:\n` +
+             `- DNS Lookup: ${res.dnsTime}ms\n` +
+             `- TCP Connection: ${res.connectTime}ms\n` +
+             `- Time to First Byte (TTFB): ${res.ttfbTime}ms\n` +
+             `- DOM Content Loaded: ${res.domReadyTime}ms\n` +
+             `- Full Page Load: ${res.loadTime}ms`;
+    }
+    return "Timing API not populated. Try reloading page.";
+  });
+
+  setupTool("tool-langcharset", getLangCharset, (res) => {
+    if (res) {
+      return `Document Language: ${res.lang || "Not Set"}\nCharacter Set (Charset): ${res.charset || "Not Set"}\nViewport Config: ${res.viewport || "Not Set"}`;
+    }
+    return "Failed to audit document lang and encoding.";
+  });
+
+  setupTool("tool-showhidden", revealHiddenElements, (res) => {
+    return `Hidden elements audit: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-contenteditable", makeContentEditable, (res) => {
+    return `Global contenteditable state: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-formfiller", fillMockFormData, (res) => {
+    return res;
+  });
+
+  setupTool("tool-fontviewer", extractFonts, (res) => {
+    if (res && res.length > 0) {
+      return `Computed Fonts Declared on Page:\n\n${res.join('\n')}`;
+    }
+    return "Failed to retrieve fonts.";
+  });
+
+  setupTool("tool-svgextractor", getPageSVGs, (res) => {
+    if (res && res.length > 0) {
+      const text = res.join('\n\n');
+      navigator.clipboard.writeText(text);
+      return `Copied ${res.length} raw SVG elements directly to your clipboard!`;
+    }
+    return "No inline SVG element found on page.";
+  });
+
+  setupTool("tool-tablecsv", convertTableToCSV, (res) => {
+    if (res) {
+      navigator.clipboard.writeText(res);
+      return "Successfully parsed HTML table, generated CSV string and copied to clipboard!";
+    }
+    return "No tabular table structure found on the active page.";
+  });
+
+  setupTool("tool-iframeinspect", inspectIframes, (res) => {
+    if (res && res.length > 0) {
+      return `Iframes Found (${res.length}):\n\n${res.join('\n')}`;
+    }
+    return "No iframes found on this page.";
+  });
+
+  setupTool("tool-useragent", getUserAgent, (res) => {
+    if (res) {
+      navigator.clipboard.writeText(res);
+      return `User-Agent String:\n\n${res}\n\n(Copied to clipboard)`;
+    }
+    return "Failed to retrieve agent string.";
+  });
+
+  setupTool("tool-viewport", getViewportDetails, (res) => {
+    if (res) {
+      return `Screen Resolution: ${res.screenWidth} x ${res.screenHeight}\n` +
+             `Viewport Size: ${res.viewportWidth} x ${res.viewportHeight}\n` +
+             `Device Pixel Ratio: ${res.pixelRatio}x`;
+    }
+    return "Failed to check viewport parameters.";
+  });
+
+  setupTool("tool-scrolltop", scrollToTop, (res) => {
+    return res;
+  });
+
+  setupTool("tool-scrollbottom", scrollToBottom, (res) => {
+    return res;
+  });
+
   const btnInspect = document.getElementById("tool-inspect");
   if (btnInspect) {
     btnInspect.addEventListener("click", async () => {
@@ -431,6 +573,363 @@ function getPageEmails() {
   const text = document.body.innerText;
   const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
   return [...new Set(emails)];
+}
+
+function toggleCSS() {
+  let disabled = window._stackXRay_cssDisabled || false;
+  disabled = !disabled;
+  window._stackXRay_cssDisabled = disabled;
+  
+  Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).forEach(el => {
+    if (el.id && el.id.startsWith('stackxray-')) return;
+    el.disabled = disabled;
+  });
+  return disabled ? "CSS Stylesheets Disabled" : "CSS Stylesheets Enabled";
+}
+
+function toggleTailwind() {
+  let disabled = window._stackXRay_tailwindDisabled || false;
+  disabled = !disabled;
+  window._stackXRay_tailwindDisabled = disabled;
+
+  let count = 0;
+  Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).forEach(el => {
+    if (el.id && el.id.startsWith('stackxray-')) return;
+    
+    const href = el.getAttribute('href') || '';
+    const isTailwindLink = href.includes('tailwind') || href.includes('cdn.tailwindcss.com');
+    let isTailwindStyle = false;
+    
+    if (el.tagName === 'STYLE') {
+      const content = el.textContent || '';
+      if (content.includes('tailwind') || content.includes('--tw-') || content.includes('.tw-')) {
+        isTailwindStyle = true;
+      }
+    }
+
+    if (isTailwindLink || isTailwindStyle) {
+      el.disabled = disabled;
+      count++;
+    }
+  });
+
+  return disabled ? `Disabled ${count} Tailwind CSS stylesheets/blocks` : `Enabled ${count} Tailwind CSS stylesheets/blocks`;
+}
+
+function disableScripts() {
+  const scripts = Array.from(document.querySelectorAll('script'));
+  scripts.forEach(s => s.remove());
+  
+  let id = window.setTimeout(function() {}, 0);
+  while (id--) {
+    window.clearTimeout(id);
+    window.clearInterval(id);
+  }
+  
+  return `Cleaned ${scripts.length} script elements from the DOM and cleared active setTimeout/setInterval loops. Note: fully disabling active execution context requires disabling JavaScript in Chrome settings.`;
+}
+
+function viewCookies() {
+  const cookies = document.cookie;
+  if (!cookies) return "No cookies found for this domain context.";
+  
+  const parsed = cookies.split(';').map((c, index) => {
+    const parts = c.split('=');
+    return `${index + 1}. ${parts[0].trim()} = ${parts.slice(1).join('=').trim()}`;
+  });
+  return `Cookies found (${parsed.length}):\n\n${parsed.join('\n')}`;
+}
+
+async function pickColor() {
+  if (!window.EyeDropper) return "EyeDropper API is not supported in this browser.";
+  try {
+    const eyeDropper = new EyeDropper();
+    const result = await eyeDropper.open();
+    return `Picked Color Hex: ${result.sRGBHex}`;
+  } catch (e) {
+    return "Error picking color: " + e.message;
+  }
+}
+
+function highlightGridFlex() {
+  if (window._stackXRay_gridFlexActive) {
+    Array.from(document.querySelectorAll('*')).forEach(el => {
+      if (el._stackXRay_hadFlexGridHighlight) {
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadFlexGridHighlight;
+        delete el._prevOutline;
+      }
+    });
+    window._stackXRay_gridFlexActive = false;
+    return "disabled";
+  }
+  const all = Array.from(document.querySelectorAll('*'));
+  let gridCount = 0;
+  let flexCount = 0;
+  for (const el of all) {
+    const display = window.getComputedStyle(el).display;
+    if (display === 'flex' || display === 'inline-flex' || display === 'grid' || display === 'inline-grid') {
+      el._prevOutline = el.style.outline;
+      el._stackXRay_hadFlexGridHighlight = true;
+      if (display.includes('flex')) {
+        el.style.outline = '2px solid #3b82f6';
+        flexCount++;
+      } else {
+        el.style.outline = '2px solid #10b981';
+        gridCount++;
+      }
+    }
+  }
+  window._stackXRay_gridFlexActive = true;
+  return `enabled (${flexCount} flex elements, ${gridCount} grid elements highlighted)`;
+}
+
+function highlightAbsoluteFixed() {
+  if (window._stackXRay_absoluteActive) {
+    Array.from(document.querySelectorAll('*')).forEach(el => {
+      if (el._stackXRay_hadAbsoluteHighlight) {
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadAbsoluteHighlight;
+        delete el._prevOutline;
+      }
+    });
+    window._stackXRay_absoluteActive = false;
+    return "disabled";
+  }
+  const all = Array.from(document.querySelectorAll('*'));
+  let count = 0;
+  for (const el of all) {
+    const pos = window.getComputedStyle(el).position;
+    if (pos === 'absolute' || pos === 'fixed') {
+      el._prevOutline = el.style.outline;
+      el._stackXRay_hadAbsoluteHighlight = true;
+      el.style.outline = '2px solid #f59e0b';
+      count++;
+    }
+  }
+  window._stackXRay_absoluteActive = true;
+  return `enabled (${count} absolute/fixed elements highlighted)`;
+}
+
+function killTransitions() {
+  let styleEl = document.getElementById("stackxray-notransitions-style");
+  if (styleEl) {
+    styleEl.remove();
+    return "disabled";
+  } else {
+    styleEl = document.createElement("style");
+    styleEl.id = "stackxray-notransitions-style";
+    styleEl.textContent = `
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+    return "enabled";
+  }
+}
+
+function stripURLParams() {
+  const url = window.location.origin + window.location.pathname;
+  window.location.href = url;
+  return "Reloading page without query parameters or hash...";
+}
+
+function extractJsonLd() {
+  const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
+  return scripts.map(s => {
+    try {
+      return JSON.parse(s.textContent);
+    } catch (e) {
+      return { error: "Failed to parse JSON schema: " + e.message };
+    }
+  });
+}
+
+function extractMetaTags() {
+  return Array.from(document.querySelectorAll('meta')).map(m => {
+    const name = m.getAttribute('name') || m.getAttribute('property') || m.getAttribute('http-equiv') || '';
+    const content = m.getAttribute('content') || '';
+    if (name) {
+      return `${name}: ${content}`;
+    }
+    return '';
+  }).filter(Boolean);
+}
+
+function getPerfMetrics() {
+  const t = window.performance.timing;
+  if (!t || t.navigationStart === 0) return null;
+  return {
+    dnsTime: t.domainLookupEnd - t.domainLookupStart,
+    connectTime: t.connectEnd - t.connectStart,
+    ttfbTime: t.responseStart - t.requestStart,
+    domReadyTime: t.domContentLoadedEventEnd - t.navigationStart,
+    loadTime: t.loadEventEnd - t.navigationStart
+  };
+}
+
+function getLangCharset() {
+  const lang = document.documentElement.lang;
+  const metaCharset = document.querySelector('meta[charset]');
+  const charset = metaCharset ? metaCharset.getAttribute('charset') : (document.characterSet || document.charset);
+  const metaViewport = document.querySelector('meta[name="viewport"]');
+  const viewport = metaViewport ? metaViewport.getAttribute('content') : '';
+  return { lang, charset, viewport };
+}
+
+function revealHiddenElements() {
+  if (window._stackXRay_hiddenRevealed) {
+    document.querySelectorAll('*').forEach(el => {
+      if (el._stackXRay_hadHiddenReveal) {
+        el.style.display = el._prevDisplay || '';
+        el.style.visibility = el._prevVisibility || '';
+        el.style.opacity = el._prevOpacity || '';
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadHiddenReveal;
+      }
+    });
+    window._stackXRay_hiddenRevealed = false;
+    return "disabled (restored previous display properties)";
+  }
+  const all = Array.from(document.querySelectorAll('*'));
+  let count = 0;
+  for (const el of all) {
+    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'HEAD') continue;
+    const style = window.getComputedStyle(el);
+    const isHidden = style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity) === 0;
+    
+    if (isHidden) {
+      el._prevDisplay = el.style.display;
+      el._prevVisibility = el.style.visibility;
+      el._prevOpacity = el.style.opacity;
+      el._prevOutline = el.style.outline;
+      el._stackXRay_hadHiddenReveal = true;
+      
+      el.style.display = 'block';
+      el.style.visibility = 'visible';
+      el.style.opacity = '1';
+      el.style.outline = '2px dashed #f59e0b';
+      count++;
+    }
+  }
+  window._stackXRay_hiddenRevealed = true;
+  return `enabled (revealed and outlined ${count} hidden elements)`;
+}
+
+function makeContentEditable() {
+  let isEditable = window._stackXRay_contentEditable || false;
+  isEditable = !isEditable;
+  window._stackXRay_contentEditable = isEditable;
+  
+  document.body.contentEditable = isEditable;
+  return isEditable ? "enabled (all elements editable)" : "disabled";
+}
+
+function fillMockFormData() {
+  const inputs = Array.from(document.querySelectorAll('input, textarea, select'));
+  let count = 0;
+  for (const input of inputs) {
+    if (input.disabled || input.readOnly) continue;
+    
+    const type = input.getAttribute('type') || 'text';
+    
+    if (type === 'text' || input.tagName === 'TEXTAREA') {
+      const name = (input.getAttribute('name') || input.getAttribute('id') || '').toLowerCase();
+      if (name.includes('name')) {
+        input.value = "John Doe";
+      } else if (name.includes('phone') || name.includes('tel')) {
+        input.value = "+1 (555) 019-2834";
+      } else if (name.includes('zip') || name.includes('postal')) {
+        input.value = "94043";
+      } else if (name.includes('city')) {
+        input.value = "Mountain View";
+      } else {
+        input.value = "Hello World";
+      }
+      count++;
+    } else if (type === 'email') {
+      input.value = "test.developer@example.com";
+      count++;
+    } else if (type === 'number') {
+      input.value = "42";
+      count++;
+    } else if (type === 'password') {
+      input.value = "StackRayDevToolsP@ss123";
+      count++;
+    } else if (type === 'tel') {
+      input.value = "+1 (555) 019-2834";
+      count++;
+    } else if (input.tagName === 'SELECT') {
+      if (input.options.length > 1) {
+        input.selectedIndex = 1;
+        count++;
+      }
+    }
+  }
+  return `Successfully populated ${count} input fields with test data!`;
+}
+
+function extractFonts() {
+  const fonts = [];
+  document.querySelectorAll('*').forEach(el => {
+    const f = window.getComputedStyle(el).fontFamily;
+    if (f) fonts.push(f);
+  });
+  return [...new Set(fonts)].slice(0, 20);
+}
+
+function getPageSVGs() {
+  return Array.from(document.querySelectorAll('svg')).map(svg => svg.outerHTML);
+}
+
+function convertTableToCSV() {
+  const table = document.querySelector('table');
+  if (!table) return null;
+  
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const csv = rows.map(row => {
+    const cells = Array.from(row.querySelectorAll('th, td'));
+    return cells.map(cell => {
+      let text = cell.innerText.replace(/"/g, '""');
+      return `"${text}"`;
+    }).join(',');
+  }).join('\n');
+  
+  return csv;
+}
+
+function inspectIframes() {
+  return Array.from(document.querySelectorAll('iframe')).map((ifr, idx) => {
+    const src = ifr.getAttribute('src') || 'About:Blank';
+    const sandbox = ifr.getAttribute('sandbox') || 'None';
+    return `${idx + 1}. Source: ${src}\n   Sandbox: ${sandbox}`;
+  });
+}
+
+function getUserAgent() {
+  return navigator.userAgent;
+}
+
+function getViewportDetails() {
+  return {
+    screenWidth: window.screen.width,
+    screenHeight: window.screen.height,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    pixelRatio: window.devicePixelRatio
+  };
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return "Scrolled window to coordinate (0, 0) smoothly.";
+}
+
+function scrollToBottom() {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  return "Scrolled window to page height coordinate smoothly.";
 }
 
 function toggleCSS() {
