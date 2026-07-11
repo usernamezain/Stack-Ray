@@ -60,6 +60,9 @@
       <button class="nav-btn" data-target="tab-net">Net</button>
       <button class="nav-btn" data-target="tab-leads">Leads</button>
       <button class="nav-btn" data-target="tab-domain">Domain</button>
+      <button class="nav-btn" data-target="tab-security">Security</button>
+      <button class="nav-btn" data-target="tab-media">Media</button>
+      <button class="nav-btn" data-target="tab-utils">Sandbox</button>
       <button class="nav-btn" data-target="tab-devtools">DevTools</button>
       <button class="nav-btn" data-target="tab-ai">AI Summary</button>
       <button class="nav-btn" data-target="tab-report">Report</button>
@@ -291,15 +294,90 @@
       </div>
     </div>
 
-    <!-- DOMAIN / WHOIS TAB -->
-    <div id="tab-domain" class="tab-content">
-      <div class="category-header">Hosting Provider</div>
-      <div id="domain-hosting" class="results-container">
-        <div class="loading"><div class="spinner"></div>Fetching hosting info...</div>
+    </div>
+ 
+    <!-- SECURITY TAB -->
+    <div id="tab-security" class="tab-content">
+      <div class="category-header">Security Connection</div>
+      <div id="security-ssl" class="results-container">
+        <div class="loading"><div class="spinner"></div>Checking connection security...</div>
       </div>
-      <div class="category-header">WHOIS Registration Info</div>
-      <div id="domain-whois" class="results-container">
-        <div class="loading"><div class="spinner"></div>Fetching WHOIS info...</div>
+      <div class="category-header">HTTP Response Headers</div>
+      <div id="security-headers" class="results-container">
+        <div class="loading"><div class="spinner"></div>Fetching security headers...</div>
+      </div>
+      <div class="category-header">Secure Cookies Audit</div>
+      <div id="security-cookies" class="results-container">
+        <div class="loading"><div class="spinner"></div>Auditing cookie settings...</div>
+      </div>
+      <div class="category-header">Page Security Audits</div>
+      <div id="security-dom" class="results-container">
+        <div class="loading"><div class="spinner"></div>Scanning DOM elements...</div>
+      </div>
+    </div>
+
+    <!-- MEDIA EXPLORER TAB -->
+    <div id="tab-media" class="tab-content">
+      <div class="category-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Page Media Assets</span>
+        <button id="btn-media-download-all" class="mini-btn">Download All</button>
+      </div>
+      <div id="media-results" class="results-container">
+        <div class="loading"><div class="spinner"></div>Scraping page media assets...</div>
+      </div>
+    </div>
+
+    <!-- UTILITY SANDBOX TAB -->
+    <div id="tab-utils" class="tab-content">
+      <div class="category-header">Sandbox Coding Utilities</div>
+      
+      <div class="util-card" style="background:#ffffff; border:1px solid #e5e5e5; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <div class="util-header" style="font-size:12px; font-weight:700; color:#171717; margin-bottom:8px; display:flex; align-items:center; gap:6px;">🔑 JWT Decoder</div>
+        <div class="util-body">
+          <textarea id="util-jwt-input" placeholder="Paste your encoded JWT string here..." style="width:100%; height:50px; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;"></textarea>
+          <div id="util-jwt-output" class="devtools-log hidden" style="margin-top:0; max-height:150px;"></div>
+        </div>
+      </div>
+
+      <div class="util-card" style="background:#ffffff; border:1px solid #e5e5e5; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <div class="util-header" style="font-size:12px; font-weight:700; color:#171717; margin-bottom:8px; display:flex; align-items:center; gap:6px;">📦 JSON Formatter</div>
+        <div class="util-body">
+          <textarea id="util-json-input" placeholder="Paste raw JSON text here..." style="width:100%; height:50px; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;"></textarea>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <button id="btn-util-json-beautify" class="action-btn" style="flex:1; height:28px; font-size:11px; padding:0; background:#7c3aed; color:#fff; border:none; border-radius:4px; cursor:pointer;">Beautify</button>
+            <button id="btn-util-json-minify" class="action-btn secondary" style="flex:1; height:28px; font-size:11px; padding:0; border-radius:4px; cursor:pointer;">Minify</button>
+          </div>
+          <div id="util-json-output" class="devtools-log hidden" style="margin-top:0; max-height:150px;"></div>
+        </div>
+      </div>
+
+      <div class="util-card" style="background:#ffffff; border:1px solid #e5e5e5; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <div class="util-header" style="font-size:12px; font-weight:700; color:#171717; margin-bottom:8px; display:flex; align-items:center; gap:6px;">🔄 Base64 Converter</div>
+        <div class="util-body">
+          <textarea id="util-base64-input" placeholder="Enter text to encode/decode..." style="width:100%; height:40px; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;"></textarea>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <button id="btn-util-base64-encode" class="action-btn" style="flex:1; height:28px; font-size:11px; padding:0; background:#7c3aed; color:#fff; border:none; border-radius:4px; cursor:pointer;">Encode</button>
+            <button id="btn-util-base64-decode" class="action-btn secondary" style="flex:1; height:28px; font-size:11px; padding:0; border-radius:4px; cursor:pointer;">Decode</button>
+          </div>
+          <div id="util-base64-output" class="devtools-log hidden" style="margin-top:0; max-height:100px;"></div>
+        </div>
+      </div>
+
+      <div class="util-card" style="background:#ffffff; border:1px solid #e5e5e5; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <div class="util-header" style="font-size:12px; font-weight:700; color:#171717; margin-bottom:8px; display:flex; align-items:center; gap:6px;">🔍 Regex Matcher</div>
+        <div class="util-body">
+          <input type="text" id="util-regex-pattern" placeholder="Enter regex pattern (e.g. [0-9]+)" style="width:100%; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;" />
+          <textarea id="util-regex-string" placeholder="Enter test string to check against..." style="width:100%; height:40px; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;"></textarea>
+          <div id="util-regex-output" class="devtools-log hidden" style="margin-top:0; max-height:100px;"></div>
+        </div>
+      </div>
+
+      <div class="util-card" style="background:#ffffff; border:1px solid #e5e5e5; border-radius:10px; padding:12px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,0.02);">
+        <div class="util-header" style="font-size:12px; font-weight:700; color:#171717; margin-bottom:8px; display:flex; align-items:center; gap:6px;"># Hash Generator (SHA-256)</div>
+        <div class="util-body">
+          <input type="text" id="util-hash-input" placeholder="Type text to generate hashes in real-time..." style="width:100%; font-family:monospace; font-size:11px; padding:6px; box-sizing:border-box; margin-bottom:8px; border:1px solid #e5e5e5; border-radius:6px; outline:none;" />
+          <div id="util-hash-output" class="devtools-log hidden" style="margin-top:0; line-height:1.6;"></div>
+        </div>
       </div>
     </div>
 
@@ -648,6 +726,9 @@
 
     <script src="../categories.js"></script>
     <script src="../domain.js"></script>
+    <script src="security.js"></script>
+    <script src="media.js"></script>
+    <script src="utils.js"></script>
     <script src="devtools.js"></script>
     <script src="popup.js"></script>
   </body>
