@@ -13,7 +13,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       tabContents.forEach((c) => c.classList.remove("active"));
 
       btn.classList.add("active");
-      document.getElementById(btn.dataset.target).classList.add("active");
+      const targetId = btn.dataset.target;
+      document.getElementById(targetId).classList.add("active");
+
+      // Lazy load tab audits on click
+      if (targetId === "tab-security") {
+        if (typeof runSecurityAudit === "function") {
+          runSecurityAudit();
+        }
+      } else if (targetId === "tab-media") {
+        if (typeof runMediaScraper === "function") {
+          runMediaScraper();
+        }
+      }
 
       // Scroll the tab button into view if it's partially hidden
       btn.scrollIntoView({

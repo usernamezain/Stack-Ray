@@ -188,3 +188,12 @@ async function downloadScrapedMedia(all = false) {
     }
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btnDownloadAll = document.getElementById("btn-media-download-all");
+  if (btnDownloadAll) {
+    btnDownloadAll.addEventListener("click", () => {
+      downloadScrapedMedia(false);
+    });
+  }
+});
