@@ -60,6 +60,7 @@
       <button class="nav-btn" data-target="tab-net">Net</button>
       <button class="nav-btn" data-target="tab-leads">Leads</button>
       <button class="nav-btn" data-target="tab-domain">Domain</button>
+      <button class="nav-btn" data-target="tab-devtools">DevTools</button>
       <button class="nav-btn" data-target="tab-ai">AI Summary</button>
       <button class="nav-btn" data-target="tab-report">Report</button>
     </div>
@@ -302,6 +303,83 @@
       </div>
     </div>
 
+    <!-- DEVTOOLS TAB -->
+    <div id="tab-devtools" class="tab-content">
+      <div class="category-header">Design &amp; Layout Tools</div>
+      <div class="devtools-grid">
+        <button class="tool-card" id="tool-designmode">
+          <span class="tool-icon">📝</span>
+          <span class="tool-title">Page Editor</span>
+          <span class="tool-desc">Toggle text editing</span>
+        </button>
+        <button class="tool-card" id="tool-wireframe">
+          <span class="tool-icon">🕸️</span>
+          <span class="tool-title">Wireframe Mode</span>
+          <span class="tool-desc">Outline DOM elements</span>
+        </button>
+        <button class="tool-card" id="tool-variables">
+          <span class="tool-icon">🎨</span>
+          <span class="tool-title">CSS Variables</span>
+          <span class="tool-desc">List custom properties</span>
+        </button>
+        <button class="tool-card" id="tool-clearstorage">
+          <span class="tool-icon">🧹</span>
+          <span class="tool-title">Wipe Storage</span>
+          <span class="tool-desc">Clear local/cookies</span>
+        </button>
+      </div>
+
+      <div class="category-header">Accessibility &amp; Audits</div>
+      <div class="devtools-grid">
+        <button class="tool-card" id="tool-altinspector">
+          <span class="tool-icon">🖼️</span>
+          <span class="tool-title">Alt Inspector</span>
+          <span class="tool-desc">Display image alt text</span>
+        </button>
+        <button class="tool-card" id="tool-lowcontrast">
+          <span class="tool-icon">👁️</span>
+          <span class="tool-title">Colorblind Sim</span>
+          <span class="tool-desc">Apply deuteranopia filter</span>
+        </button>
+        <button class="tool-card" id="tool-missinglabels">
+          <span class="tool-icon">🏷️</span>
+          <span class="tool-title">Label Inspector</span>
+          <span class="tool-desc">Outline input errors</span>
+        </button>
+        <button class="tool-card" id="tool-insecurelinks">
+          <span class="tool-icon">🔒</span>
+          <span class="tool-title">HTTP Finder</span>
+          <span class="tool-desc">Highlight insecure links</span>
+        </button>
+      </div>
+
+      <div class="category-header">Extractors &amp; Info</div>
+      <div class="devtools-grid">
+        <button class="tool-card" id="tool-domdepth">
+          <span class="tool-icon">📊</span>
+          <span class="tool-title">DOM Diagnostics</span>
+          <span class="tool-desc">Verify count and depth</span>
+        </button>
+        <button class="tool-card" id="tool-copylinks">
+          <span class="tool-icon">🔗</span>
+          <span class="tool-title">Copy Links</span>
+          <span class="tool-desc">Extract all href URLs</span>
+        </button>
+        <button class="tool-card" id="tool-copyimages">
+          <span class="tool-icon">📷</span>
+          <span class="tool-title">Copy Images</span>
+          <span class="tool-desc">Extract all image sources</span>
+        </button>
+        <button class="tool-card" id="tool-copyemails">
+          <span class="tool-icon">✉️</span>
+          <span class="tool-title">Copy Emails</span>
+          <span class="tool-desc">Grab support contacts</span>
+        </button>
+      </div>
+
+      <div id="devtools-log" class="devtools-log hidden"></div>
+    </div>
+
     <!-- AI SUMMARY TAB -->
     <div id="tab-ai" class="tab-content">
       <div class="ai-config-row">
@@ -362,6 +440,7 @@
 
     <script src="../categories.js"></script>
     <script src="../domain.js"></script>
+    <script src="devtools.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
