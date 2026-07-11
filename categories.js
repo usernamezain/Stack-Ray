@@ -1,5 +1,6 @@
 // categories.js - The centralized technology detection engine
 
+(function() {
 const CATEGORIES = [
   {
     name: "Frontend Frameworks",
@@ -610,3 +611,4 @@ class TechDetector {
 // Attach to window for injection
 window.TechDetector = TechDetector;
 window.CATEGORIES = CATEGORIES;
+})();

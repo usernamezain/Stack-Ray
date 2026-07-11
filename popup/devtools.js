@@ -363,6 +363,12 @@ function setupTool(buttonId, pageFunction, formatter) {
 
     btn.classList.remove("active");
     
+    // Handle script execution failure on restricted pages gracefully
+    if (res === null || res === undefined) {
+      showDevToolsLog("Action failed. Script execution is restricted or blocked on this page context.");
+      return;
+    }
+
     // Format output
     const output = formatter(res);
     showDevToolsLog(output);
