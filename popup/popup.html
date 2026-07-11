@@ -455,6 +455,11 @@
           <span class="tool-title">HTTP Finder</span>
           <span class="tool-desc">Highlight insecure links</span>
         </button>
+        <button class="tool-card" id="tool-contrastchecker">
+          <span class="tool-icon">🌈</span>
+          <span class="tool-title">Contrast Checker</span>
+          <span class="tool-desc">Audit WCAG contrast ratios</span>
+        </button>
       </div>
 
       <div class="category-header">Accessibility &amp; Forms</div>
@@ -572,6 +577,12 @@
           <span class="tool-title">Scroll Bottom</span>
           <span class="tool-desc">Quick scroll to the bottom</span>
         </button>
+      </div>
+
+      <div class="category-header">Live CSS Injector Sandbox</div>
+      <div style="margin: 8px 0 16px 0; display: flex; flex-direction: column; gap: 8px;">
+        <textarea id="devtools-css-input" placeholder="/* Enter custom CSS rules here... */&#10;body { background: #f5f3ff !important; }" style="width: 100%; height: 60px; background: #ffffff; border: 1px solid #e5e5e5; border-radius: 8px; font-family: monospace; font-size: 11px; padding: 8px; resize: vertical; box-sizing: border-box; outline: none; transition: border-color 0.2s ease;"></textarea>
+        <button class="action-btn" id="btn-inject-css" style="width: 100%; height: 32px; font-size: 12px; font-weight: bold; background: #7c3aed; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s ease;">Inject CSS to Page</button>
       </div>
 
       <div id="devtools-log" class="devtools-log hidden"></div>
