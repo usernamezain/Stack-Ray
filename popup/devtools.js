@@ -259,6 +259,96 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  setupTool("tool-invertcolors", toggleInvertColors, (res) => {
+    return `Invert colors style is now: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-inlinestyles", highlightInlineStyles, (res) => {
+    return `Inline CSS Spotter style is now: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-resourcecount", countResources, (res) => {
+    if (res) {
+      return `Page Loaded Assets:\n` +
+             `- Scripts (.js): ${res.jsCount}\n` +
+             `- Styles (.css): ${res.cssCount}\n` +
+             `- Images: ${res.imgCount}\n` +
+             `- Fonts: ${res.fontCount}\n` +
+             `- Total resources tracked: ${res.totalCount}`;
+    }
+    return "Failed to analyze page loaded assets.";
+  });
+
+  setupTool("tool-idelements", highlightIDElements, (res) => {
+    return `ID elements outline is now: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-listclasses", listCSSClasses, (res) => {
+    if (res && res.length > 0) {
+      return `Unique CSS Classes declared in active DOM (${res.length}):\n\n${res.join(', ')}`;
+    }
+    return "No custom classes declared in the active page DOM.";
+  });
+
+  setupTool("tool-headings", checkHeadings, (res) => {
+    if (res) {
+      return `Heading Structure Hierarchy:\n` +
+             `- H1 counts: ${res.h1} ${res.h1 === 0 ? "⚠️ (Missing H1!)" : ""}\n` +
+             `- H2 counts: ${res.h2}\n` +
+             `- H3 counts: ${res.h3}\n` +
+             `- H4 counts: ${res.h4}\n` +
+             `- H5 counts: ${res.h5}\n` +
+             `- H6 counts: ${res.h6}\n\n` +
+             `Outline overlay: ${res.status.toUpperCase()}`;
+    }
+    return "Failed to audit headings.";
+  });
+
+  setupTool("tool-showpasswords", showPasswords, (res) => {
+    return `Show passwords state: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-brokenimages", findBrokenImages, (res) => {
+    return `Broken images detector is now: ${res.toUpperCase()}`;
+  });
+
+  setupTool("tool-printpage", triggerPrintPage, (res) => {
+    return "Native printer dialogue prompted.";
+  });
+
+  const btnHardReload = document.getElementById("tool-hardreload");
+  if (btnHardReload) {
+    btnHardReload.addEventListener("click", async () => {
+      const tabId = await getActiveTabId();
+      if (!tabId) return;
+      showDevToolsLog("Bypassing cache and hard reloading current tab...");
+      chrome.tabs.reload(tabId, { bypassCache: true });
+    });
+  }
+
+  const btnScreenshot = document.getElementById("tool-screenshot");
+  if (btnScreenshot) {
+    btnScreenshot.addEventListener("click", async () => {
+      showDevToolsLog("Capturing screen layout visible area...");
+      try {
+        chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
+          if (chrome.runtime.lastError) {
+            showDevToolsLog("Error capturing screenshot: " + chrome.runtime.lastError.message);
+            return;
+          }
+          if (dataUrl) {
+            chrome.tabs.create({ url: dataUrl });
+            showDevToolsLog("Screenshot captured successfully! Opened in a new browser tab.");
+          } else {
+            showDevToolsLog("Failed to capture visible layout. Check tab permissions.");
+          }
+        });
+      } catch (e) {
+        showDevToolsLog("Capture error: " + e.message);
+      }
+    });
+  }
 });
 
 function setupTool(buttonId, pageFunction, formatter) {
@@ -995,4 +1085,181 @@ function viewCookies() {
     return `${index + 1}. ${parts[0].trim()} = ${parts.slice(1).join('=').trim()}`;
   });
   return `Cookies found (${parsed.length}):\n\n${parsed.join('\n')}`;
+}
+
+function toggleInvertColors() {
+  let styleEl = document.getElementById("stackxray-invert-style");
+  if (styleEl) {
+    styleEl.remove();
+    return "disabled";
+  } else {
+    styleEl = document.createElement("style");
+    styleEl.id = "stackxray-invert-style";
+    styleEl.textContent = `
+      html {
+        filter: invert(1) hue-rotate(180deg) !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+    return "enabled";
+  }
+}
+
+function highlightInlineStyles() {
+  if (window._stackXRay_inlineActive) {
+    Array.from(document.querySelectorAll('[style]')).forEach(el => {
+      if (el._stackXRay_hadInlineHighlight) {
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadInlineHighlight;
+        delete el._prevOutline;
+      }
+    });
+    window._stackXRay_inlineActive = false;
+    return "disabled";
+  }
+  const elements = Array.from(document.querySelectorAll('[style]'));
+  let count = 0;
+  for (const el of elements) {
+    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'HEAD') continue;
+    el._prevOutline = el.style.outline;
+    el._stackXRay_hadInlineHighlight = true;
+    el.style.outline = '2px solid #a855f7';
+    count++;
+  }
+  window._stackXRay_inlineActive = true;
+  return `enabled (${count} inline styled tags highlighted)`;
+}
+
+function countResources() {
+  try {
+    const resources = performance.getEntriesByType('resource');
+    let jsCount = 0;
+    let cssCount = 0;
+    let imgCount = 0;
+    let fontCount = 0;
+    for (const r of resources) {
+      const type = r.initiatorType;
+      const url = r.name || '';
+      if (type === 'script' || url.endsWith('.js')) jsCount++;
+      else if (type === 'css' || url.endsWith('.css')) cssCount++;
+      else if (type === 'img' || url.includes('.png') || url.includes('.jpg') || url.includes('.webp') || url.includes('.svg') || url.includes('.gif')) imgCount++;
+      else if (type === 'css' && (url.includes('.woff') || url.includes('.ttf') || url.includes('.otf'))) fontCount++;
+    }
+    return {
+      jsCount,
+      cssCount,
+      imgCount,
+      fontCount,
+      totalCount: resources.length
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function highlightIDElements() {
+  if (window._stackXRay_idActive) {
+    Array.from(document.querySelectorAll('[id]')).forEach(el => {
+      if (el._stackXRay_hadIdHighlight) {
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadIdHighlight;
+        delete el._prevOutline;
+      }
+    });
+    window._stackXRay_idActive = false;
+    return "disabled";
+  }
+  const elements = Array.from(document.querySelectorAll('[id]'));
+  let count = 0;
+  for (const el of elements) {
+    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.id.startsWith('stackxray-')) continue;
+    el._prevOutline = el.style.outline;
+    el._stackXRay_hadIdHighlight = true;
+    el.style.outline = '2px solid #ec4899';
+    count++;
+  }
+  window._stackXRay_idActive = true;
+  return `enabled (${count} ID elements highlighted)`;
+}
+
+function listCSSClasses() {
+  const classes = [];
+  document.querySelectorAll('*').forEach(el => {
+    if (el.classList.length > 0) {
+      el.classList.forEach(c => classes.push(c));
+    }
+  });
+  return [...new Set(classes)].slice(0, 50);
+}
+
+function checkHeadings() {
+  const h1 = document.querySelectorAll('h1').length;
+  const h2 = document.querySelectorAll('h2').length;
+  const h3 = document.querySelectorAll('h3').length;
+  const h4 = document.querySelectorAll('h4').length;
+  const h5 = document.querySelectorAll('h5').length;
+  const h6 = document.querySelectorAll('h6').length;
+  
+  let status = "disabled";
+  if (window._stackXRay_headingsActive) {
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
+      el.style.outline = el._prevOutline || '';
+      delete el._prevOutline;
+    });
+    window._stackXRay_headingsActive = false;
+  } else {
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(el => {
+      el._prevOutline = el.style.outline;
+      el.style.outline = '2px dashed #06b6d4';
+    });
+    window._stackXRay_headingsActive = true;
+    status = "enabled (Cyan outlines on headings)";
+  }
+  
+  return { h1, h2, h3, h4, h5, h6, status };
+}
+
+function showPasswords() {
+  let active = window._stackXRay_passwordsActive || false;
+  active = !active;
+  window._stackXRay_passwordsActive = active;
+
+  const passwords = Array.from(document.querySelectorAll('input[type="password"], input[data-prev-type="password"]'));
+  for (const input of passwords) {
+    if (active) {
+      input.setAttribute('data-prev-type', 'password');
+      input.setAttribute('type', 'text');
+    } else {
+      input.setAttribute('type', 'password');
+    }
+  }
+  return active ? "passwords revealed" : "passwords hidden";
+}
+
+function findBrokenImages() {
+  if (window._stackXRay_brokenImagesActive) {
+    document.querySelectorAll('img').forEach(img => {
+      img.style.outline = img._prevOutline || '';
+      delete img._prevOutline;
+    });
+    window._stackXRay_brokenImagesActive = false;
+    return "disabled";
+  }
+  const images = Array.from(document.querySelectorAll('img'));
+  let count = 0;
+  for (const img of images) {
+    const isBroken = img.naturalWidth === 0 || img.complete === false;
+    if (isBroken) {
+      img._prevOutline = img.style.outline;
+      img.style.outline = '3px solid #ef4444';
+      count++;
+    }
+  }
+  window._stackXRay_brokenImagesActive = true;
+  return `enabled (${count} broken images flagged in red)`;
+}
+
+function triggerPrintPage() {
+  window.print();
+  return "triggered";
 }
