@@ -278,6 +278,7 @@ const CATEGORIES = [
       "WebRTC",
       "WebGPU",
       "WebSockets",
+      "Vanilla Stack",
     ],
   },
 ];
@@ -317,13 +318,60 @@ class TechDetector {
 
   detect(htmlContent) {
     this.detected = {};
+    this.detectCoreWebTech();
     this.detectFromGlobals();
     this.detectFromDOM();
     this.detectFromScripts();
     this.detectFromContent(htmlContent);
     this.detectBrowserAPIs();
     this.resolveImplications();
+    this.checkVanillaStack();
     return this.formatResults();
+  }
+
+  detectCoreWebTech() {
+    // 1. HTML5 Detection: doctype html OR semantic elements present
+    const hasHtml5 = (document.doctype && document.doctype.name === 'html') ||
+      !!document.querySelector('header, footer, article, section, nav, main, aside, figure, figcaption, time');
+    if (hasHtml5) {
+      this.addDetection("HTML5");
+    }
+
+    // 2. CSS3 Detection: styles OR stylesheets present
+    const hasCss3 = !!document.querySelector('style, link[rel="stylesheet"]');
+    if (hasCss3) {
+      this.addDetection("CSS3");
+    }
+
+    // 3. JavaScript Detection: script tags present
+    const hasJs = !!document.querySelector('script');
+    if (hasJs) {
+      this.addDetection("JavaScript");
+    }
+  }
+
+  checkVanillaStack() {
+    // Core/Major categories that indicate frameworks or CMS platforms
+    const frameworkCategories = [
+      "Frontend Frameworks",
+      "Meta Frameworks",
+      "E-Commerce",
+      "CMS & Platforms"
+    ];
+
+    let hasFrameworkOrCms = false;
+    for (const techName of Object.keys(this.detected)) {
+      const tech = this.detected[techName];
+      if (frameworkCategories.includes(tech.category)) {
+        hasFrameworkOrCms = true;
+        break;
+      }
+    }
+
+    // If no framework/CMS is detected, it is a Vanilla Stack site
+    if (!hasFrameworkOrCms) {
+      this.addDetection("Vanilla Stack");
+    }
   }
 
   detectFromScripts() {
@@ -493,6 +541,9 @@ class TechDetector {
       Mantine: ".mantine-",
       ChakraUI: ".chakra-",
       NaiveUI: ".n-config-provider, .n-button, .n-layout",
+      Squarespace: 'meta[name="generator"][content*="Squarespace"], link[href*="squarespace.com"]',
+      Magento: 'script[src*="mage/"], link[href*="skin/frontend/"]',
+      PrestaShop: 'meta[name="generator"][content*="PrestaShop"]',
     };
     for (const [tech, selector] of Object.entries(domRules)) {
       if (document.querySelector(selector)) this.addDetection(tech);
@@ -521,7 +572,7 @@ class TechDetector {
       Netlify: /netlify|netlify\.app/i,
       Cloudflare: /cloudflare/i,
       Shopify: /shopify|myshopify\.com/i,
-      WordPress: /wp-content|wp-includes/i,
+      WordPress: /wp-content|wp-includes|wordpress/i,
       PHP: /PHPSESSID|meta\[name="generator"\]\[content\*="PHP"\]/i,
       HubSpot: /hubspot\.com|hs-scripts/i,
       Klaviyo: /klaviyo\.com/i,
@@ -530,6 +581,11 @@ class TechDetector {
       Hotjar: /hotjar\.com/i,
       NaiveUI: /naive-ui/i,
       "core-js": /core-js/i,
+      Wix: /wixstatic|wix\.com|wix-code/i,
+      WooCommerce: /woocommerce|wc-ajax|wc-cart/i,
+      Squarespace: /squarespace\.com|static1\.squarespace\.com/i,
+      Magento: /magento/i,
+      PrestaShop: /prestashop/i,
     };
     for (const [tech, regex] of Object.entries(patterns)) {
       if (regex.test(html)) this.addDetection(tech);
