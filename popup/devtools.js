@@ -69,6 +69,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return "No email addresses found on the active page text.";
   });
+
+  setupTool("tool-disablecss", toggleCSS, (res) => {
+    return res;
+  });
+
+  setupTool("tool-disabletailwind", toggleTailwind, (res) => {
+    return res;
+  });
+
+  setupTool("tool-disablescripts", disableScripts, (res) => {
+    return res;
+  });
+
+  setupTool("tool-cookies", viewCookies, (res) => {
+    return res;
+  });
+
+  const btnInspect = document.getElementById("tool-inspect");
+  if (btnInspect) {
+    btnInspect.addEventListener("click", async () => {
+      const tabId = await getActiveTabId();
+      if (!tabId) return;
+
+      const isActive = window.isInspectorActive || false;
+      const nextActive = !isActive;
+      window.isInspectorActive = nextActive;
+
+      const designBtnInspect = document.getElementById("btn-inspect-design");
+      if (designBtnInspect) {
+        designBtnInspect.className = nextActive ? "action-btn secondary active" : "action-btn secondary";
+        designBtnInspect.querySelector("span").textContent = nextActive ? "Disable Design Inspector" : "Inspect Page Elements";
+      }
+
+      const action = nextActive ? 'ENABLE_INSPECTOR' : 'DISABLE_INSPECTOR';
+      showDevToolsLog(`Design Inspector is now: ${nextActive ? "ENABLED" : "DISABLED"}. Hover elements on the web page to inspect and copy styling tokens.`);
+      
+      chrome.tabs.sendMessage(tabId, { action }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn("DevTools inspector toggle failed:", chrome.runtime.lastError.message);
+          window.isInspectorActive = isActive;
+          if (designBtnInspect) {
+            designBtnInspect.className = isActive ? "action-btn secondary active" : "action-btn secondary";
+            designBtnInspect.querySelector("span").textContent = isActive ? "Disable Design Inspector" : "Inspect Page Elements";
+          }
+        }
+      });
+    });
+  }
 });
 
 function setupTool(buttonId, pageFunction, formatter) {
@@ -383,4 +431,69 @@ function getPageEmails() {
   const text = document.body.innerText;
   const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
   return [...new Set(emails)];
+}
+
+function toggleCSS() {
+  let disabled = window._stackXRay_cssDisabled || false;
+  disabled = !disabled;
+  window._stackXRay_cssDisabled = disabled;
+  
+  Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).forEach(el => {
+    if (el.id && el.id.startsWith('stackxray-')) return;
+    el.disabled = disabled;
+  });
+  return disabled ? "CSS Stylesheets Disabled" : "CSS Stylesheets Enabled";
+}
+
+function toggleTailwind() {
+  let disabled = window._stackXRay_tailwindDisabled || false;
+  disabled = !disabled;
+  window._stackXRay_tailwindDisabled = disabled;
+
+  let count = 0;
+  Array.from(document.querySelectorAll('link[rel="stylesheet"], style')).forEach(el => {
+    if (el.id && el.id.startsWith('stackxray-')) return;
+    
+    const href = el.getAttribute('href') || '';
+    const isTailwindLink = href.includes('tailwind') || href.includes('cdn.tailwindcss.com');
+    let isTailwindStyle = false;
+    
+    if (el.tagName === 'STYLE') {
+      const content = el.textContent || '';
+      if (content.includes('tailwind') || content.includes('--tw-') || content.includes('.tw-')) {
+        isTailwindStyle = true;
+      }
+    }
+
+    if (isTailwindLink || isTailwindStyle) {
+      el.disabled = disabled;
+      count++;
+    }
+  });
+
+  return disabled ? `Disabled ${count} Tailwind CSS stylesheets/blocks` : `Enabled ${count} Tailwind CSS stylesheets/blocks`;
+}
+
+function disableScripts() {
+  const scripts = Array.from(document.querySelectorAll('script'));
+  scripts.forEach(s => s.remove());
+  
+  let id = window.setTimeout(function() {}, 0);
+  while (id--) {
+    window.clearTimeout(id);
+    window.clearInterval(id);
+  }
+  
+  return `Cleaned ${scripts.length} script elements from the DOM and cleared active setTimeout/setInterval loops. Note: fully disabling active execution context requires disabling JavaScript in Chrome settings.`;
+}
+
+function viewCookies() {
+  const cookies = document.cookie;
+  if (!cookies) return "No cookies found for this domain context.";
+  
+  const parsed = cookies.split(';').map((c, index) => {
+    const parts = c.split('=');
+    return `${index + 1}. ${parts[0].trim()} = ${parts.slice(1).join('=').trim()}`;
+  });
+  return `Cookies found (${parsed.length}):\n\n${parsed.join('\n')}`;
 }

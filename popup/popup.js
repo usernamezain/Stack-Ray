@@ -486,7 +486,7 @@ function renderMarkdown(md) {
 }
 
 // ── DESIGN INSPECTOR LOGIC ─────────────────────
-let isInspectorActive = false;
+window.isInspectorActive = false;
 
 function initDesignInspector() {
   const btnInspect = document.getElementById("btn-inspect-design");
