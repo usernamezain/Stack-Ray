@@ -157,6 +157,8 @@ async function runProfileForActiveTab() {
     document.getElementById("a11y-results").innerHTML = '<div class="loading"><div class="spinner"></div>Auditing Accessibility...</div>';
     document.getElementById("net-results").innerHTML = '<div class="loading"><div class="spinner"></div>Intercepting Network &amp; Console...</div>';
     document.getElementById("leads-results").innerHTML = '<div class="loading"><div class="spinner"></div>Hunting for Contacts &amp; Footprints...</div>';
+    document.getElementById("domain-hosting").innerHTML = '<div class="loading"><div class="spinner"></div>Fetching hosting info...</div>';
+    document.getElementById("domain-whois").innerHTML = '<div class="loading"><div class="spinner"></div>Fetching WHOIS info...</div>';
     document.getElementById("ai-results").innerHTML = '<div class="no-results">Click "Generate AI Summary" to summarize page contents with local Gemini Nano model.</div>';
     document.getElementById("ai-warning").classList.add("hidden");
     
@@ -225,6 +227,9 @@ async function runProfileForActiveTab() {
     // Render timing waterfall & social card previews
     if (data.timing) renderWaterfallResults(data.timing);
     if (data.seo) renderSocialPreviews(data.seo, urlObj.hostname);
+
+    // Trigger Hosting and WHOIS background lookup
+    runDomainLookup(urlObj.hostname);
 
     // Query cached console logs from the content script
     try {
@@ -1986,5 +1991,72 @@ function renderKeywordsResults(keywords) {
         </span>
       </div>
     `;
+  }
+}
+
+async function runDomainLookup(hostname) {
+  const domainHostingEl = document.getElementById("domain-hosting");
+  const domainWhoisEl = document.getElementById("domain-whois");
+
+  try {
+    if (typeof window.fetchDomainInfo !== "function") {
+      throw new Error("fetchDomainInfo utility not loaded");
+    }
+
+    const res = await window.fetchDomainInfo(hostname);
+
+    if (res.error) {
+      domainHostingEl.innerHTML = `<div class="error">${res.error}</div>`;
+      domainWhoisEl.innerHTML = `<div class="error">${res.error}</div>`;
+      return;
+    }
+
+    // 1. Render Hosting Provider Details
+    if (res.hosting && !res.hosting.error) {
+      domainHostingEl.innerHTML = `
+        <div class="item">
+          <span class="item-name">Hosting Provider</span>
+          <span class="item-value">${res.hosting.isp}</span>
+        </div>
+        <div class="item">
+          <span class="item-name">Server Location</span>
+          <span class="item-value">${res.hosting.location}</span>
+        </div>
+        <div class="item">
+          <span class="item-name">ASN</span>
+          <span class="item-value">${res.hosting.asn}</span>
+        </div>
+      `;
+    } else {
+      domainHostingEl.innerHTML = `<div class="error">${(res.hosting && res.hosting.error) || "Failed to retrieve hosting details"}</div>`;
+    }
+
+    // 2. Render WHOIS Registration Details
+    if (res.whois && !res.whois.error) {
+      domainWhoisEl.innerHTML = `
+        <div class="item">
+          <span class="item-name">Registrar</span>
+          <span class="item-value">${res.whois.registrar}</span>
+        </div>
+        <div class="item">
+          <span class="item-name">Registered Date</span>
+          <span class="item-value">${res.whois.registered}</span>
+        </div>
+        <div class="item">
+          <span class="item-name">Expiration Date</span>
+          <span class="item-value">${res.whois.expires}</span>
+        </div>
+        <div class="item">
+          <span class="item-name">Name Servers</span>
+          <span class="item-value">${res.whois.nameservers}</span>
+        </div>
+      `;
+    } else {
+      domainWhoisEl.innerHTML = `<div class="error">${(res.whois && res.whois.error) || "Failed to retrieve WHOIS details"}</div>`;
+    }
+  } catch (err) {
+    console.error("Domain lookup error:", err);
+    domainHostingEl.innerHTML = '<div class="error">Failed to perform domain search.</div>';
+    domainWhoisEl.innerHTML = '<div class="error">Failed to retrieve WHOIS records.</div>';
   }
 }
