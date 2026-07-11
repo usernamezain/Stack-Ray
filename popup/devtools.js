@@ -349,6 +349,39 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  setupTool("tool-contrastchecker", checkWCAGContrast, (res) => {
+    if (res && res.length > 0) {
+      return `WCAG Contrast Audit Result:\n` +
+             `- Checked visible text nodes.\n` +
+             `- Found ${res.length} elements failing contrast ratios (< 4.5:1):\n\n` +
+             res.map((val, idx) => `${idx + 1}. <${val.tag}> "${val.text}"\n   Contrast: ${val.ratio}:1 (Required: 4.5:1)\n   Colors: ${val.color} on ${val.bg}`).join('\n\n');
+    }
+    return "WCAG Contrast Audit completed: All visible text nodes pass the AA threshold (4.5:1)!";
+  });
+
+  const btnInjectCSS = document.getElementById("btn-inject-css");
+  if (btnInjectCSS) {
+    btnInjectCSS.addEventListener("click", async () => {
+      const css = document.getElementById("devtools-css-input").value;
+      if (!css.trim()) {
+        showDevToolsLog("Please enter some CSS rules first.");
+        return;
+      }
+      showDevToolsLog("Injecting CSS rules to tab page...");
+      const tabId = await getActiveTabId();
+      if (!tabId) return;
+      try {
+        await chrome.scripting.insertCSS({
+          target: { tabId },
+          css: css
+        });
+        showDevToolsLog("CSS rules injected successfully!");
+      } catch (e) {
+        showDevToolsLog("CSS Injection error: " + e.message);
+      }
+    });
+  }
 });
 
 function setupTool(buttonId, pageFunction, formatter) {
@@ -1268,4 +1301,85 @@ function findBrokenImages() {
 function triggerPrintPage() {
   window.print();
   return "triggered";
+}
+
+function checkWCAGContrast() {
+  if (window._stackXRay_contrastActive) {
+    Array.from(document.querySelectorAll('*')).forEach(el => {
+      if (el._stackXRay_hadContrastHighlight) {
+        el.style.outline = el._prevOutline || '';
+        delete el._stackXRay_hadContrastHighlight;
+        delete el._prevOutline;
+      }
+    });
+    window._stackXRay_contrastActive = false;
+    return [];
+  }
+
+  const elements = Array.from(document.querySelectorAll('*'));
+  const failures = [];
+
+  function getLuminance(r, g, b) {
+    const a = [r, g, b].map(v => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+  }
+
+  function parseRGB(colorStr) {
+    const m = colorStr.match(/\d+/g);
+    if (!m) return [0, 0, 0];
+    return [parseInt(m[0]), parseInt(m[1]), parseInt(m[2])];
+  }
+
+  function getElementBg(el) {
+    while (el) {
+      const bg = window.getComputedStyle(el).backgroundColor;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+        return bg;
+      }
+      el = el.parentElement;
+    }
+    return 'rgb(255, 255, 255)';
+  }
+
+  for (const el of elements) {
+    if (el.offsetWidth === 0 || el.offsetHeight === 0) continue;
+    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'HEAD') continue;
+    
+    const textNode = Array.from(el.childNodes).find(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+    if (!textNode) continue;
+
+    const style = window.getComputedStyle(el);
+    const fgColor = style.color;
+    const bgColor = getElementBg(el);
+
+    const [fgR, fgG, fgB] = parseRGB(fgColor);
+    const [bgR, bgG, bgB] = parseRGB(bgColor);
+
+    const L1 = getLuminance(fgR, fgG, fgB);
+    const L2 = getLuminance(bgR, bgG, bgB);
+
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+
+    const ratio = parseFloat(((lighter + 0.05) / (darker + 0.05)).toFixed(2));
+
+    if (ratio < 4.5) {
+      failures.push({
+        tag: el.tagName.toLowerCase(),
+        text: el.innerText.trim().slice(0, 30),
+        ratio: ratio,
+        color: fgColor,
+        bg: bgColor
+      });
+      el._prevOutline = el.style.outline;
+      el._stackXRay_hadContrastHighlight = true;
+      el.style.outline = '2px dashed #f97316';
+    }
+  }
+
+  window._stackXRay_contrastActive = true;
+  return failures;
 }
