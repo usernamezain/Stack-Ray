@@ -305,7 +305,7 @@
 
     <!-- DEVTOOLS TAB -->
     <div id="tab-devtools" class="tab-content">
-      <div class="category-header">Design &amp; Layout Tools</div>
+      <div class="category-header">Design &amp; Styling Tools</div>
       <div class="devtools-grid">
         <button class="tool-card" id="tool-designmode">
           <span class="tool-icon">📝</span>
@@ -317,10 +317,25 @@
           <span class="tool-title">Design Inspector</span>
           <span class="tool-desc">Hover &amp; copy styles</span>
         </button>
+        <button class="tool-card" id="tool-colorpicker">
+          <span class="tool-icon">🧪</span>
+          <span class="tool-title">Color Picker</span>
+          <span class="tool-desc">Use eye-dropper picker</span>
+        </button>
         <button class="tool-card" id="tool-wireframe">
           <span class="tool-icon">🕸️</span>
           <span class="tool-title">Wireframe Mode</span>
           <span class="tool-desc">Outline DOM elements</span>
+        </button>
+        <button class="tool-card" id="tool-gridflex">
+          <span class="tool-icon">🏁</span>
+          <span class="tool-title">Grid/Flex Highlight</span>
+          <span class="tool-desc">Outline grids &amp; flexboxes</span>
+        </button>
+        <button class="tool-card" id="tool-absolute">
+          <span class="tool-icon">📐</span>
+          <span class="tool-title">Outline Absolute</span>
+          <span class="tool-desc">Outline absolute/fixed pos</span>
         </button>
         <button class="tool-card" id="tool-variables">
           <span class="tool-icon">🎨</span>
@@ -337,9 +352,14 @@
           <span class="tool-title">Disable Tailwind</span>
           <span class="tool-desc">Turn off Tailwind CSS</span>
         </button>
+        <button class="tool-card" id="tool-notransitions">
+          <span class="tool-icon">⚡</span>
+          <span class="tool-title">Kill Transitions</span>
+          <span class="tool-desc">Set transition time to 0s</span>
+        </button>
       </div>
 
-      <div class="category-header">Diagnostics &amp; Storage</div>
+      <div class="category-header">Storage &amp; Scripts</div>
       <div class="devtools-grid">
         <button class="tool-card" id="tool-clearstorage">
           <span class="tool-icon">🧹</span>
@@ -356,20 +376,59 @@
           <span class="tool-title">Clean Scripts</span>
           <span class="tool-desc">Remove scripts &amp; timers</span>
         </button>
+        <button class="tool-card" id="tool-stripquery">
+          <span class="tool-icon">✂️</span>
+          <span class="tool-title">Strip URL Params</span>
+          <span class="tool-desc">Reload without query/hash</span>
+        </button>
+      </div>
+
+      <div class="category-header">SEO, Performance &amp; Audits</div>
+      <div class="devtools-grid">
         <button class="tool-card" id="tool-domdepth">
           <span class="tool-icon">📊</span>
           <span class="tool-title">DOM Diagnostics</span>
           <span class="tool-desc">Verify count and depth</span>
         </button>
-      </div>
-
-      <div class="category-header">Accessibility &amp; Audits</div>
-      <div class="devtools-grid">
+        <button class="tool-card" id="tool-jsonld">
+          <span class="tool-icon">📇</span>
+          <span class="tool-title">JSON-LD Schema</span>
+          <span class="tool-desc">Extract schema schemas</span>
+        </button>
+        <button class="tool-card" id="tool-metatags">
+          <span class="tool-icon">🏷️</span>
+          <span class="tool-title">Meta Tags Viewer</span>
+          <span class="tool-desc">Inspect metadata rules</span>
+        </button>
+        <button class="tool-card" id="tool-brokenlinks">
+          <span class="tool-icon">💔</span>
+          <span class="tool-title">Broken Link Check</span>
+          <span class="tool-desc">Verify href endpoints</span>
+        </button>
+        <button class="tool-card" id="tool-perfmetrics">
+          <span class="tool-icon">⏱️</span>
+          <span class="tool-title">Performance Time</span>
+          <span class="tool-desc">Inspect loading speeds</span>
+        </button>
+        <button class="tool-card" id="tool-langcharset">
+          <span class="tool-icon">🌐</span>
+          <span class="tool-title">Lang &amp; Encoding</span>
+          <span class="tool-desc">Check document locale</span>
+        </button>
         <button class="tool-card" id="tool-altinspector">
           <span class="tool-icon">🖼️</span>
           <span class="tool-title">Alt Inspector</span>
           <span class="tool-desc">Display image alt text</span>
         </button>
+        <button class="tool-card" id="tool-insecurelinks">
+          <span class="tool-icon">🔒</span>
+          <span class="tool-title">HTTP Finder</span>
+          <span class="tool-desc">Highlight insecure links</span>
+        </button>
+      </div>
+
+      <div class="category-header">Accessibility &amp; Forms</div>
+      <div class="devtools-grid">
         <button class="tool-card" id="tool-lowcontrast">
           <span class="tool-icon">👁️</span>
           <span class="tool-title">Colorblind Sim</span>
@@ -380,14 +439,24 @@
           <span class="tool-title">Label Inspector</span>
           <span class="tool-desc">Outline input errors</span>
         </button>
-        <button class="tool-card" id="tool-insecurelinks">
-          <span class="tool-icon">🔒</span>
-          <span class="tool-title">HTTP Finder</span>
-          <span class="tool-desc">Highlight insecure links</span>
+        <button class="tool-card" id="tool-showhidden">
+          <span class="tool-icon">👁️‍🗨️</span>
+          <span class="tool-title">Show Hidden</span>
+          <span class="tool-desc">Outline display:none</span>
+        </button>
+        <button class="tool-card" id="tool-contenteditable">
+          <span class="tool-icon">✍️</span>
+          <span class="tool-title">Editable DOM</span>
+          <span class="tool-desc">Make all tags editable</span>
+        </button>
+        <button class="tool-card" id="tool-formfiller">
+          <span class="tool-icon">✍️</span>
+          <span class="tool-title">Form Filler</span>
+          <span class="tool-desc">Fill inputs with dummy data</span>
         </button>
       </div>
 
-      <div class="category-header">Extractors &amp; Info</div>
+      <div class="category-header">Extractors &amp; Clipboard</div>
       <div class="devtools-grid">
         <button class="tool-card" id="tool-copylinks">
           <span class="tool-icon">🔗</span>
@@ -403,6 +472,50 @@
           <span class="tool-icon">✉️</span>
           <span class="tool-title">Copy Emails</span>
           <span class="tool-desc">Grab support contacts</span>
+        </button>
+        <button class="tool-card" id="tool-fontviewer">
+          <span class="tool-icon">🔤</span>
+          <span class="tool-title">Font Viewer</span>
+          <span class="tool-desc">List computed typography</span>
+        </button>
+        <button class="tool-card" id="tool-svgextractor">
+          <span class="tool-icon">🌀</span>
+          <span class="tool-title">Extract SVGs</span>
+          <span class="tool-desc">Copy raw XML of vectors</span>
+        </button>
+        <button class="tool-card" id="tool-tablecsv">
+          <span class="tool-icon">📋</span>
+          <span class="tool-title">Table to CSV</span>
+          <span class="tool-desc">Parse elements to sheet</span>
+        </button>
+        <button class="tool-card" id="tool-iframeinspect">
+          <span class="tool-icon">🖼️</span>
+          <span class="tool-title">Iframe Auditing</span>
+          <span class="tool-desc">Inspect nested source frames</span>
+        </button>
+      </div>
+
+      <div class="category-header">System &amp; Viewport Helpers</div>
+      <div class="devtools-grid">
+        <button class="tool-card" id="tool-useragent">
+          <span class="tool-icon">💻</span>
+          <span class="tool-title">User-Agent</span>
+          <span class="tool-desc">Get browser client string</span>
+        </button>
+        <button class="tool-card" id="tool-viewport">
+          <span class="tool-icon">📱</span>
+          <span class="tool-title">Viewport Size</span>
+          <span class="tool-desc">Read dimension densities</span>
+        </button>
+        <button class="tool-card" id="tool-scrolltop">
+          <span class="tool-icon">⬆️</span>
+          <span class="tool-title">Scroll Top</span>
+          <span class="tool-desc">Quick scroll to coordinate 0</span>
+        </button>
+        <button class="tool-card" id="tool-scrollbottom">
+          <span class="tool-icon">⬇️</span>
+          <span class="tool-title">Scroll Bottom</span>
+          <span class="tool-desc">Quick scroll to the bottom</span>
         </button>
       </div>
 
