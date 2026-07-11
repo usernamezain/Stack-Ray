@@ -1737,5 +1737,133 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* ── SECURITY TAB ────────────────────────────── */
+.security-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+
+.security-label-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.security-indicator {
+  font-size: 14px;
+}
+
+.security-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.security-badge.secure {
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #a7f3d0;
+}
+
+.security-badge.warning {
+  background: #fffbeb;
+  color: #f59e0b;
+  border: 1px solid #fde68a;
+}
+
+.security-badge.danger {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+/* ── MEDIA EXPLORER TAB ──────────────────────── */
+.media-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.media-asset-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.media-asset-card:hover {
+  border-color: #7c3aed;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
+}
+
+.media-asset-select {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 10;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.media-preview-container {
+  height: 90px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.media-preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.media-preview-svg {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.media-asset-details {
+  padding: 8px;
+  font-size: 9px;
+  color: #737373;
+}
+
+.media-asset-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #171717;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.media-asset-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
 
 
