@@ -22,16 +22,16 @@ window.fetchDomainInfo = async function(hostname) {
 
   // 1. Fetch Hosting Info (ISP, Geo, ASN)
   try {
-    const hostRes = await fetch(`https://ip-api.com/json/${secondLevelDomain}?fields=status,message,country,city,isp,org,as`);
+    const hostRes = await fetch(`https://ipapi.co/${secondLevelDomain}/json/`);
     const hostData = await hostRes.json();
-    if (hostData && hostData.status === "success") {
+    if (hostData && !hostData.error) {
       result.hosting = {
-        isp: hostData.isp || hostData.org || "Unknown",
-        location: `${hostData.city ? hostData.city + ", " : ""}${hostData.country || ""}`,
-        asn: hostData.as || "Unknown"
+        isp: hostData.org || "Unknown",
+        location: `${hostData.city ? hostData.city + ", " : ""}${hostData.country_name || ""}`,
+        asn: hostData.asn || "Unknown"
       };
     } else {
-      result.hosting = { error: hostData.message || "Failed to load" };
+      result.hosting = { error: hostData.reason || "Failed to load hosting details" };
     }
   } catch (e) {
     result.hosting = { error: "Network error fetching hosting details" };
