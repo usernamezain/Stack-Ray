@@ -59,6 +59,7 @@
       <button class="nav-btn" data-target="tab-a11y">A11y</button>
       <button class="nav-btn" data-target="tab-net">Net</button>
       <button class="nav-btn" data-target="tab-leads">Leads</button>
+      <button class="nav-btn" data-target="tab-domain">Domain</button>
       <button class="nav-btn" data-target="tab-ai">AI Summary</button>
       <button class="nav-btn" data-target="tab-report">Report</button>
     </div>
@@ -289,6 +290,18 @@
       </div>
     </div>
 
+    <!-- DOMAIN / WHOIS TAB -->
+    <div id="tab-domain" class="tab-content">
+      <div class="category-header">Hosting Provider</div>
+      <div id="domain-hosting" class="results-container">
+        <div class="loading"><div class="spinner"></div>Fetching hosting info...</div>
+      </div>
+      <div class="category-header">WHOIS Registration Info</div>
+      <div id="domain-whois" class="results-container">
+        <div class="loading"><div class="spinner"></div>Fetching WHOIS info...</div>
+      </div>
+    </div>
+
     <!-- AI SUMMARY TAB -->
     <div id="tab-ai" class="tab-content">
       <div class="ai-config-row">
@@ -348,6 +361,7 @@
     </div>
 
     <script src="../categories.js"></script>
+    <script src="../domain.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
